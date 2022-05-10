@@ -32,6 +32,6 @@
 *.app
 
 build
-//Release
+Release
 .idea
 cmake-build-debug

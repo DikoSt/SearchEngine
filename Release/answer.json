@@ -1,0 +1,47 @@
+{
+    "answers": {
+        "request001": {
+            "relevance": [
+                {
+                    "docID": 2,
+                    "rank": 1.0
+                },
+                {
+                    "docID": 0,
+                    "rank": 0.8
+                },
+                {
+                    "docID": 9,
+                    "rank": 0.4
+                },
+                {
+                    "docID": 1,
+                    "rank": 0.3
+                },
+                {
+                    "docID": 8,
+                    "rank": 0.2
+                }
+            ],
+            "result": true
+        },
+        "request002": {
+            "relevance": [
+                {
+                    "docID": 8,
+                    "rank": 1.0
+                }
+            ],
+            "result": true
+        },
+        "request003": {
+            "relevance": [
+                {
+                    "docID": 8,
+                    "rank": 1.0
+                }
+            ],
+            "result": true
+        }
+    }
+}

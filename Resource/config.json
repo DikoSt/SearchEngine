@@ -1,0 +1,24 @@
+{
+    "config": {
+        "max_responses": 5,
+        "method_search": 1,
+        "name": "SearchEngine",
+        "version": "0.1"
+    },
+    "files": [
+        "..\\resource\\file0.txt",
+        "..\\resource\\file1.txt",
+        "..\\resource\\file2.txt",
+        "..\\resource\\file3.txt",
+        "..\\resource\\file4.txt",
+        "..\\resource\\file5.txt",
+        "..\\resource\\file6.txt",
+        "..\\resource\\file7.txt",
+        "..\\resource\\file8.txt",
+        "..\\resource\\file9.txt",
+		"..\\resource\\file10.txt",
+		"..\\resource\\file11.txt",
+		"..\\resource\\file12.txt",
+		"..\\resource\\file13.txt"
+    ]
+}

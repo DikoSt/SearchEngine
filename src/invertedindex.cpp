@@ -1,36 +1,44 @@
 #include "invertedindex.h"
 
+template<typename T1, typename T2>
+void func_merge(std::map<T1, std::vector<T2>>& map1, const std::map<T1, std::vector<T2>>& map2){
+    for (const auto&[key, vect]:map2){
+        map1[key].insert(map1[key].cend(), vect.begin(), vect.end());
+    }
+}
+
 void InvertedIndex::ToIndexDoc(const size_t &docId, const std::string &textDocument) {
 //TODO пересмотреть, хоть и работает но логка мне не очень нравится
+
+    std::map<std::string, std::vector<Entry>> miniFreqDictionary;
     std::vector<std::string> words =  SplitIntoWords(textDocument);
-    //mDocLengthInWord.push_back(std::pair<size_t, size_t>(docId, words.size()));
+
+//TODO подумать над тем что docId поидее будет один и тот же, или что-то должно упроститься. мне так кажется
+    for (const std::string &word: words) {
+        if (!miniFreqDictionary.count(word)) { // если такого слова в словаре ещё нет
+            miniFreqDictionary[word].push_back({docId, 1}); // создаём запись с таким словом
+        } else {
+            if (miniFreqDictionary[word].back().docId == docId) { // если такое слово в словаре уже есть и относится к текущему документу
+                miniFreqDictionary[word].back().count++;  // увеличиваем количество вхождений на 1
+            } else {
+                miniFreqDictionary[word].push_back({docId, 1}); // если это слово в текущем документе встретилось впервые, то делаем запись с 1.
+            }
+        }
+    }
+//А тепеь займёмся перенесением полученных результатов в общий котёл
     if (mLockDictionary!= nullptr ){ // если нет указателя, значит mutex не нужен
-        mLockDictionary->lock();
+        mLockDictionary->lock(); // лочим общий котёл до лучших времён
         mAllDocLengthInWord += words.size();
         mDocLength[docId] = words.size();
+        func_merge(mFreqDictionary, miniFreqDictionary); // произведём слияние словарей
+
         mLockDictionary->unlock();
     } else {
         mAllDocLengthInWord += words.size();
         mDocLength[docId] = words.size();
+        func_merge(mFreqDictionary, miniFreqDictionary); // произведём слияние словарей
     }
 
-    for (const std::string &word: words) {
-        if (mLockDictionary!= nullptr ){ // если нет указателя, значит mutex не нужен
-            mLockDictionary->lock();
-        }
-        if (!mFreqDictionary.count(word)) { // если такого слова в словаре ещё нет
-            mFreqDictionary[word].push_back({docId, 1}); // создаём запись с таким словом
-        } else {
-            if (mFreqDictionary[word].back().docId == docId) { // если такое слово в словаре уже есть и относится к текущему документу
-                mFreqDictionary[word].back().count++;  // увеличиваем количество вхождений на 1
-            } else {
-                mFreqDictionary[word].push_back({docId, 1}); // если это слово в текущем документе встретилось впервые, то делаем запись с 1.
-            }
-        }
-        if (mLockDictionary!= nullptr){
-            mLockDictionary->unlock();
-        }
-    }
 }
 
 void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &inputDocs) {

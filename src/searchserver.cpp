@@ -199,7 +199,7 @@ std::vector<RelativeIndex> SearchServer::SearchByQuery_BM25(const std::string &q
         scoresDocs.insert(std::pair(scoreDoc,docId));
         scoreDoc=0;
     }
-
+    if (scoresDocs.empty()) return std::vector<RelativeIndex>();
     // std::cout << std::endl << "query: \""<<query << "\"" << std::endl;
     double maxRank = scoresDocs.rbegin()->first;
     for (auto item = scoresDocs.rbegin(); item != scoresDocs.rend();++item){

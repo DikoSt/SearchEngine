@@ -29,9 +29,10 @@ try {
 
 SearchServer searchServer(invertedIndex);
 
-    std::vector<std::string> queries =converterJson.GetRequests();
-    std::vector<std::vector<RelativeIndex>> rIndex = searchServer.Search(queries, converterJson.GetMethodOfSearch());
+    searchServer.SetMethodOfSearch(converterJson.GetMethodOfSearch());
+    searchServer.SetMaxRequests(converterJson.GetResponsesLimit());
+    auto  queries =converterJson.GetRequests();
+    auto rIndex = searchServer.Search(queries);
     converterJson.PutAnswers(rIndex);
-
     return 0;
 }

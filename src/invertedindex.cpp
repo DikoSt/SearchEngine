@@ -113,6 +113,7 @@ void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &fileNames
     }
 
     mAllDocLengthInWord = 0;
+    synced_stream sync_out;
 thread_pool pool;
     int _hWMaxThreads = std::thread::hardware_concurrency();
     if (_hWMaxThreads < maxThreads){
@@ -126,7 +127,10 @@ pool.reset(_hWMaxThreads);
     /** заполненение частотного словаря */
     size_t docId = 0;
         for (const auto &fileName:fileNames) {
-        pool.submit([this, docId, fileName] { ToIndexDoc(docId, fileName);});
+        pool.submit([this, docId, fileName, &sync_out] { ToIndexDoc(docId, fileName);
+        sync_out.println("Docs : ", docId, " processed ");
+        });
+        
         docId++;
         }
 

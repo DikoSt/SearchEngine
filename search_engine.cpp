@@ -21,7 +21,7 @@ try {
     std::cout << "Max request limit: " << converterJson.GetResponsesLimit() << std::endl;
     std::cout << "Method search: " << converterJson.GetMethodOfSearch() << std::endl;
 
-    invertedIndex.UpdateDocumentBase(converterJson.GetFileNames(), 8);
+    invertedIndex.UpdateDocumentBase(converterJson.GetFileNames(), 2);
 } catch (ExceptionError &e) {
     std::cerr << e.what() << std::endl;
     exit(0);

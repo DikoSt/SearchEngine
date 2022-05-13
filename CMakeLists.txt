@@ -26,6 +26,7 @@ add_subdirectory(lib/nlohmann_json)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
+include_directories(lib/thread-pool-2.0.0)
 include_directories(include)
 include_directories(src)
 

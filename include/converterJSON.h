@@ -35,10 +35,6 @@ private:
  * при удачном чтении устанавливается isConfigured = true;
  */
     void ReadConfig();
-/**
-* @return строку-содержимое файла
-*/
-    std::string ReadDocument(const std::string &fileName);
 
 /**
  * Метод записывает файл answer.json
@@ -53,15 +49,7 @@ public:
                     std::string pathAnswersJSON = defaultAnswerFileName);
     ~ConverterJSON() = default;
 
-/**
-* Метод получения содержимого файлов
-* @return Возвращает список с содержимым файлов перечисленных
-* в config.json
-*/
-    std::vector<std::string> GetTextDocuments();
-
-/**
-* Метод получения запросов из файла requests.json
+/*** Метод получения запросов из файла requests.json
 * @return возвращает список запросов из файла requests.json
 */
     std::vector<std::string> GetRequests();
@@ -72,21 +60,18 @@ public:
  */
     std::vector<std::string> GetFileNames();
 
-/**
-* Метод считывает поле mMaxResponses для определения предельного
+/*** Метод считывает поле mMaxResponses для определения предельного
 * количества ответов на один запрос
 * @return максимальное количество результатов поиска max_responses
 */
     int GetResponsesLimit();
 
-/**
-* Метод считывает поле name
+/*** Метод считывает поле name
 * @return строка с наименованием программного продукта
 */
     std::string GetNameOfApp();
 
-/**
-* Метод считывает поле version
+/*** Метод считывает поле version
 * @return строка-версия файла config.json
 *
 */
@@ -97,13 +82,11 @@ public:
  */
     bool IsValidVersion();
 
-/**
-* Положить в файл answers.json результаты поисковых запросов
+/*** Положить в файл answers.json результаты поисковых запросов
 */
     void PutAnswers(const std::vector<std::vector<std::pair<size_t, double>>> &answers);
 
-/**
-* Положить в файл answers.json результаты поисковых запросов
+/*** Положить в файл answers.json результаты поисковых запросов
 */
     void PutAnswers(const std::vector<std::vector<RelativeIndex>> &answers);
 

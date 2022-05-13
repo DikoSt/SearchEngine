@@ -1,6 +1,3 @@
-//
-// Created by Denis on 20.04.2022.
-//
 #pragma once
 
 #include <iostream>
@@ -10,6 +7,8 @@
 #include <thread>
 #include <mutex>
 #include <cmath>
+#include <fstream>
+#include "thread_pool.hpp"
 #include "stringutilites.h"
 
 struct Entry{
@@ -25,18 +24,21 @@ struct Entry{
 };
 
 class InvertedIndex {
-protected:
+//protected:
+private:
     std::mutex *mLockDictionary = nullptr;
-    std::vector<std::string> mDocs;
     std::map<std::string, std::vector<Entry>> mFreqDictionary; //TF
     std::map<std::string, double> mIDF;
-    double mAVGDL ; // avarage document length
     std::map<size_t, int> mDocLength; // docId, Length of word
+    
     size_t mAllDocLengthInWord = 0;
+    double mAVGDL ; // avarage document length
+    
+    int mMaxWordInDocument = 1000;
+    int mMaxCharInWord = 100; 
 
     void CalculateIDF();
     void CalcalateAVGDL();
-
 
 /**
  * Метод частоты встречания слова в документе
@@ -45,24 +47,26 @@ protected:
  */
    void ToIndexDoc(const size_t &docId, const std::string &textDocument);
 
+/** Чтение документа из файла
+ * 
+ * @param fileName - имя файла (полный путь к файлу)
+ * @return std::string  - строка- соджержимое файла
+ */
+ 
+     std::string ReadDocument(const std::string &fileName);
 public:
     InvertedIndex() = default;
-
-//    InvertedIndex(const InvertedIndex &other);
-
 /**
  * Метод для обновить или заполнить базу документов, по которой будем совершать поиск
- * @param inputDocs - вектор строк-документов
+ * @param fileNames - вектор строк-имён файлов для индексации
  */
-
-    void UpdateDocumentBase(const std::vector<std::string> &inputDocs);
-    void UpdateDocumentBase(const std::vector<std::string> &inputDocs, const double &i);
+    void UpdateDocumentBase(const std::vector<std::string> &fileNames);
 
 /**
  * Метод выполняет обновление или заполнение базы документов, по которой будем совершать поиск.
  * Выполняется в несколькоих потоках
- * @param input_docs - вектор строк-документов
- * @param maxThreads - число, максимальное количество создаваемых потоков
+ * @param fileNames - вектор строк-имён файлов для индексации
+ * @param maxThreads - число, количество создаваемых потоков
  */
     void UpdateDocumentBase(const std::vector<std::string> &inputDocs, const int &maxThreads);
 
@@ -120,5 +124,10 @@ public:
  * @return содержание документа
  */
     std::string GetDoc(size_t docId);
+
+void SetMaxWordInDocument(int _MaxWordInDocument);
+int GetMaxWordInDocument(){return mMaxWordInDocument;};
+void SetMaxCharInWord(int _MaxWordInDocument);
+int GetMaxCharInWord(){return mMaxCharInWord;};
 
 };

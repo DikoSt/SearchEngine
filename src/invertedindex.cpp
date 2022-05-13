@@ -7,11 +7,57 @@ void func_merge(std::map<T1, std::vector<T2>>& map1, const std::map<T1, std::vec
     }
 }
 
-void InvertedIndex::ToIndexDoc(const size_t &docId, const std::string &textDocument) {
-//TODO пересмотреть, хоть и работает но логка мне не очень нравится
+std::string InvertedIndex::ReadDocument(const std::string &fileName) {
+    std::string currWord, currTextDocument;
+    int counterWords = 0;
+    int counterChar = 0;
+    bool isTyping = false;
+std::fstream file;
+    file.open(fileName, std::ios::in);
+    if (!file.is_open()) {
+        std::cout << "Unable to open file " << fileName << std::endl;
+    }else {
+        // полчим размер файла
+        file.seekg(0, std::ios::end);
+        std::streampos lengthFile = file.tellg();
+        file.seekg(0, std::ios::beg);
+        // дальше будем что-то делать
+        std::vector<char>  fileBuff(lengthFile);
+        file.read(&fileBuff[0], lengthFile);
+        file.close();
 
+        for (auto ptrc=fileBuff.begin(); ptrc != fileBuff.end(); ++ptrc){
+            if ((*ptrc >= 'A' && *ptrc <= 'Z') || (*ptrc >= 'a' && *ptrc <= 'z')) {
+                if(++counterChar <= mMaxCharInWord) {
+                    currTextDocument += tolower(*ptrc);
+                }else if (!isTyping) {
+                    std::cerr << "WARNING: count of word in file " << fileName << " greater then "
+                              << mMaxCharInWord << std::endl;
+                    isTyping = true;
+                }
+            }
+
+            if (counterWords > mMaxWordInDocument) {
+                std::cerr << "WARNING: count of word in file " << fileName << " greater then "
+                          << mMaxWordInDocument << std::endl;
+                break;
+            }
+
+            if (*ptrc == ' ') {
+                if ((ptrc+1) != fileBuff.end() && *(ptrc + 1) != ' ') {
+                    currTextDocument += ' ';
+                    counterWords++;
+                    counterChar = 0; isTyping = false;
+                }
+            }
+        }
+    }
+        return currTextDocument;
+}
+
+void InvertedIndex::ToIndexDoc(const size_t &docId, const std::string &docFileName) {
     std::map<std::string, std::vector<Entry>> miniFreqDictionary;
-    std::vector<std::string> words =  SplitIntoWords(textDocument);
+    std::vector<std::string> words =  SplitIntoWords(ReadDocument(docFileName));
 
 //TODO подумать над тем что docId поидее будет один и тот же, или что-то должно упроститься. мне так кажется
     for (const std::string &word: words) {
@@ -31,7 +77,6 @@ void InvertedIndex::ToIndexDoc(const size_t &docId, const std::string &textDocum
         mAllDocLengthInWord += words.size();
         mDocLength[docId] = words.size();
         func_merge(mFreqDictionary, miniFreqDictionary); // произведём слияние словарей
-
         mLockDictionary->unlock();
     } else {
         mAllDocLengthInWord += words.size();
@@ -41,15 +86,17 @@ void InvertedIndex::ToIndexDoc(const size_t &docId, const std::string &textDocum
 
 }
 
-void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &inputDocs) {
-    mDocs = std::vector<std::string>(inputDocs.begin(), inputDocs.end());
-    if (mDocs.empty()) return;
-
+void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &fileNames) {
+    
+    if (fileNames.empty()){
+           std::cerr << "WARNING: List of filenames is empty." << std::endl;
+            return;
+    }
     mAllDocLengthInWord = 0;
     /** заполненение частотного словаря */
     size_t docId = 0;
-        for (const auto &textDocument:mDocs) {
-        ToIndexDoc(docId, textDocument);
+        for (const auto &fileName:fileNames) {
+        ToIndexDoc(docId, fileName);
             docId++;
         }
 
@@ -57,45 +104,41 @@ void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &inputDocs
     CalculateIDF();
 }
 
-void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &inputDocs, const int &maxThreads) {
-    mDocs = std::vector<std::string>(inputDocs.begin(), inputDocs.end());
-    if (mDocs.empty()) return;
-    mAllDocLengthInWord = 0;
+void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &fileNames, const int &maxThreads) {
+    //mDocs = std::vector<std::string>(inputDocs.begin(), inputDocs.end()); Ничего записывать в mDocs не будем
+    mLockDictionary = new std::mutex;
+    if (fileNames.empty()){
+           std::cerr << "WARNING: List of filenames is empty." << std::endl;
+            return;
+    }
 
+    mAllDocLengthInWord = 0;
+thread_pool pool;
     int _hWMaxThreads = std::thread::hardware_concurrency();
     if (_hWMaxThreads < maxThreads){
         std::cout << "WARNING: to many thread " << std::endl;
-        std::cout << "Create only " << _hWMaxThreads <<" threads." << std::endl;
-    } else _hWMaxThreads = maxThreads;
-
-    mLockDictionary = new std::mutex;
-    //std::vector<std::thread> indexThread(maxThreads);
-    std::vector<std::thread> indexThread(_hWMaxThreads);
-
+        std::cout << "Hardware " << _hWMaxThreads <<" threads." << std::endl;
+    }
+pool.reset(_hWMaxThreads);
+//TODO проверить в данном случае требуется ли ограничение по количеству потоков, и если да то на каком
+    
+    mAllDocLengthInWord = 0;
     /** заполненение частотного словаря */
     size_t docId = 0;
-    auto iter = mDocs.begin();
-    auto textDocument = *iter;
-
-    while (iter != mDocs.cend()) {
-        for (int i = 0; i < _hWMaxThreads; ++i) {
-            textDocument = *iter;
-            indexThread[i] = std::thread([this, docId, textDocument] { ToIndexDoc(docId, textDocument);});
-            docId++;
-            if (++iter == mDocs.cend()) break;
+        for (const auto &fileName:fileNames) {
+        pool.submit([this, docId, fileName] { ToIndexDoc(docId, fileName);});
+        docId++;
         }
 
-        for (int i=0; i < indexThread.size(); ++i){
-            if (indexThread[i].joinable()) indexThread[i].join();
-        }
-    }
-    delete mLockDictionary;
-    mLockDictionary = nullptr;
+    pool.wait_for_tasks();
+
+   delete mLockDictionary;
+   mLockDictionary = nullptr;
 
     CalcalateAVGDL();
     CalculateIDF();
 }
-
+ 
 std::vector<Entry> InvertedIndex::GetWordCount(const std::string& word){
     if (mFreqDictionary.count(word)){
         return mFreqDictionary.at(word);
@@ -119,9 +162,8 @@ size_t InvertedIndex::GetWordCountAllDocs(const std::string& word){
 
 }
 
-//std::map<std::string, float> mIDF;
 void InvertedIndex::CalculateIDF(){
-    size_t N = mDocs.size();
+    size_t N = GetDocCount();
     for (const auto &docFreq:mFreqDictionary){
         std::string currentWord = docFreq.first;
         size_t  nqi = docFreq.second.size(); //количество документов в которых есть слово
@@ -132,7 +174,7 @@ void InvertedIndex::CalculateIDF(){
 }
 
 void InvertedIndex::CalcalateAVGDL(){
-    mAVGDL = 1.f*mAllDocLengthInWord / mDocs.size();
+    mAVGDL = 1.f*mAllDocLengthInWord /GetDocCount();
 }
 
 double InvertedIndex::GetAVGDL(){
@@ -155,6 +197,10 @@ size_t InvertedIndex::GetDocLength(const size_t &docID){
     }
 }
 
+size_t InvertedIndex::GetDocCount(){
+    return mDocLength.size(); // количество документов ко
+}
+
 int InvertedIndex::GetWordCountInDoc(const std::string& word, size_t docId){
     for (const auto &entry:GetWordCount(word)){
         if (entry.docId == docId) return entry.count;
@@ -162,10 +208,20 @@ int InvertedIndex::GetWordCountInDoc(const std::string& word, size_t docId){
     return 0;
 }
 
-size_t InvertedIndex::GetDocCount(){
-    return mDocs.size();
-}
+void InvertedIndex::SetMaxWordInDocument(int _MaxWordInDocument){
+   if (_MaxWordInDocument <= 0) {
+        std::cerr << "WARNING! Maximum word in document must greater then 0" << std::endl;
+        std::cout << "Set maximum word in document is 1000" << std::endl;
+        mMaxWordInDocument = 1000;
+    }
+    mMaxWordInDocument = _MaxWordInDocument;
+};
 
-std::string InvertedIndex::GetDoc(size_t docId){
-    return mDocs[docId];
-}
+void InvertedIndex::SetMaxCharInWord(int _MaxCharInWord){
+       if (_MaxCharInWord <= 0) {
+        std::cerr << "WARNING! Maximum character in word must greater then 0" << std::endl;
+        std::cout << "Set maximum character in word is 100" << std::endl;
+        mMaxWordInDocument = 1000;
+    }
+    mMaxWordInDocument = _MaxCharInWord;
+};

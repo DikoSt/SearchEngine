@@ -31,14 +31,14 @@ std::fstream file;
                 if(++counterChar <= mMaxCharInWord) {
                     currTextDocument += tolower(*ptrc);
                 }else if (!isTyping) {
-                    std::cerr << "WARNING: count of word in file " << fileName << " greater then "
+                    std::cerr << "WARNING: count of character  in word " << fileName << " greater then "
                               << mMaxCharInWord << std::endl;
                     isTyping = true;
                 }
             }
 
             if (counterWords > mMaxWordInDocument) {
-                std::cerr << "WARNING: count of word in file " << fileName << " greater then "
+                std::cerr << "WARNING: count of word in document " << fileName << " greater then "
                           << mMaxWordInDocument << std::endl;
                 break;
             }

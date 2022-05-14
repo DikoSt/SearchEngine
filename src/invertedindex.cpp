@@ -127,8 +127,7 @@ pool.reset(_hWMaxThreads);
     /** заполненение частотного словаря */
     size_t docId = 0;
         for (const auto &fileName:fileNames) {
-        pool.submit([this, docId, fileName, &sync_out] { ToIndexDoc(docId, fileName);
-        sync_out.println("Docs : ", docId, " processed ");
+        pool.submit([this, docId, fileName] { ToIndexDoc(docId, fileName);
         });
         
         docId++;

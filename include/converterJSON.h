@@ -16,7 +16,7 @@
 */
 class ConverterJSON {
 private:
-    std::fstream mFile;
+
     bool isConfigured = false;
 // пути к файлам 
     std::string mAnswerFileName;

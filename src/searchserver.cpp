@@ -49,6 +49,7 @@ for (const auto &[word, count]:countWordsOfQuery) {
     }
     if (findDocs.empty()) return std::vector<RelativeIndex>();
 }
+
     std::vector<RelativeIndex> result;
     std::multimap<size_t, size_t, std::greater<size_t>> sortResult;
     for (const auto &[docID, rank]:findDocs){

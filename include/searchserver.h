@@ -25,19 +25,12 @@ struct RelativeIndex{
 class SearchServer {
 private:
     InvertedIndex mIndex;
-    std::multimap<int, std::string> SortWordByFreq(const std::vector<std::string> &queryString);
-    size_t CountEntry(std::vector<Entry>, size_t docId);
-    std::map<int, int> InvertMap (std::map<int,int> inputMap);
-
-    void InvertMap (const std::map<size_t, size_t> &inputMap, std::multimap<size_t, size_t>&outputMultimap);
 
     int mMethodOfSearch = 1;
     int maxRequests = 5;
 
-
-private:
-
     void PrintResult(const std::vector<std::vector<RelativeIndex>> &result);
+
 public:
 
     /**Метод поиска документов соответствующих запросу
@@ -74,21 +67,32 @@ public:
      */
     std::vector<RelativeIndex> SearchByQuery_BM25(const std::string &query);
 
-/**
+/** Конструктор
 * @param idx в конструктор класса передаётся ссылка на класс
 * InvertedIndex, чтобы SearchServer мог узнать частоту слов
 * встречаемых в запросе
-*
 */
     SearchServer(InvertedIndex &idx, int maxRequests = 5, int methodSearch = 1);
 
-/**
-* Метод обработки поисковых запросов
+/** Метод обработки поисковых запросов
 * @param queries_input поисковые запросы взятые из файла requests.json
 * @return возвращает отсортированный список релевантных ответов для
 * заданных запросов
 */
     std::vector<std::vector<RelativeIndex>> Search(const std::vector<std::string>& queriesInput);
+
+/** Метод задания метода поиска
+ * 1 -
+ * 2 -
+ * 3 -
+ * остальное игнорируется
+ * @param mMethodOfSearch
+ */
     void SetMethodOfSearch(int mMethodOfSearch);
+
+/** Метод задания максимального количества выдаваемых резуьтатов по зхапросу
+ *
+ * @param maxRequests
+ */
     void SetMaxRequests(int maxRequests);
 };

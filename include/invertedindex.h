@@ -125,9 +125,28 @@ public:
  */
     std::string GetDoc(size_t docId);
 
+/** Мкетод задания уставки максимального количества обрабатываемых слов в документе
+ *
+ * @param _MaxWordInDocument - максимальное количество слов в документе
+ */
 void SetMaxWordInDocument(int _MaxWordInDocument);
+
+/** Мкетод возвращает текущее количество обрабатываемых слов в документе
+ *
+ * @return - установленное максимальное количество слов в документе
+ */
+
 int GetMaxWordInDocument(){return mMaxWordInDocument;};
-void SetMaxCharInWord(int _MaxWordInDocument);
+
+/** Метод задания уставки максимального количества символов в слове
+ * @param _MaxCharInWord - - максимальное количество символов в слове
+ */
+void SetMaxCharInWord(int _MaxCharInWord);
+
+/** Метод возвращает установленное количество символов в слове
+* @return - установленное максимальное количество символов в слове
+*/
+
 int GetMaxCharInWord(){return mMaxCharInWord;};
 
 };

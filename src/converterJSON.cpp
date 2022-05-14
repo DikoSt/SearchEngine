@@ -12,16 +12,9 @@ ConverterJSON::ConverterJSON(   std::string pathConfigJSON,
                                 mRequestsFileName(pathRequestJSON),
                                 mAnswerFileName(pathAnswersJSON){}
 
-
 void ConverterJSON::ReadConfig() {
     nlohmann::json configJSONFile;
-	
-#ifdef DEBUG
-std::cout << "files:" << std::endl << 
-mAnswerFileName     << std::endl <<
-mRequestsFileName   << std::endl <<
-mConfigFileName     << std::endl;
-#endif
+    std::fstream mFile;
 
     mFile.open(mConfigFileName, std::ios::in);
     if (!mFile.is_open()){
@@ -75,6 +68,7 @@ int numberRequest = 1;
     WriteAnswersJSON(answerJSON);
 }
 void ConverterJSON::WriteAnswersJSON(const nlohmann::json &j){
+    std::fstream mFile;
         mFile.open(mAnswerFileName, std::ios::out);
         if (!mFile.is_open()){
             throw ExceptionError("Unable to create file answers.json");
@@ -89,6 +83,8 @@ void ConverterJSON::WriteAnswersJSON(const nlohmann::json &j){
 }
 std::vector<std::string> ConverterJSON::GetRequests() {
     nlohmann::json requestJSON;
+    std::fstream mFile;
+
     int countOfRequests = 0;
     mFile.open(mRequestsFileName);
     if (!mFile.is_open()) {
@@ -114,6 +110,7 @@ std::vector<std::string> ConverterJSON::GetRequests() {
 
     return std::vector<std::string>(requestJSON["requests"].begin(), endRequestsList);
 };
+
 std::vector<std::string> ConverterJSON::GetFileNames(){
     if (!isConfigured){
         ReadConfig();

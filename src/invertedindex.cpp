@@ -55,6 +55,27 @@ std::fstream file;
         return currTextDocument;
 }
 
+void InvertedIndex::ToIndexDocNT(const size_t &docId, const std::string &docFileName) {
+    std::map<std::string, std::vector<Entry>> miniFreqDictionary;
+    std::vector<std::string> words =  SplitIntoWords(ReadDocument(docFileName));
+
+//TODO подумать над тем что docId поидее будет один и тот же, или что-то должно упроститься. мне так кажется
+    for (const std::string &word: words) {
+        if (!mFreqDictionary.count(word)) { // если такого слова в словаре ещё нет
+            mFreqDictionary[word].push_back({docId, 1}); // создаём запись с таким словом
+        } else {
+            if (mFreqDictionary[word].back().docId == docId) { // если такое слово в словаре уже есть и относится к текущему документу
+                mFreqDictionary[word].back().count++;  // увеличиваем количество вхождений на 1
+            } else {
+                mFreqDictionary[word].push_back({docId, 1}); // если это слово в текущем документе встретилось впервые, то делаем запись с 1.
+            }
+        }
+    }
+//А тепеь займёмся перенесением полученных результатов в общий котёл
+        mAllDocLengthInWord += words.size();
+        mDocLength[docId] = words.size();
+}
+
 void InvertedIndex::ToIndexDoc(const size_t &docId, const std::string &docFileName) {
     std::map<std::string, std::vector<Entry>> miniFreqDictionary;
     std::vector<std::string> words =  SplitIntoWords(ReadDocument(docFileName));
@@ -96,7 +117,7 @@ void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &fileNames
     /** заполненение частотного словаря */
     size_t docId = 0;
         for (const auto &fileName:fileNames) {
-        ToIndexDoc(docId, fileName);
+        ToIndexDocNT(docId, fileName);
             docId++;
         }
 
@@ -115,12 +136,12 @@ void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &fileNames
     mAllDocLengthInWord = 0;
     synced_stream sync_out;
 thread_pool pool;
-    int _hWMaxThreads = std::thread::hardware_concurrency();
-    if (_hWMaxThreads < maxThreads){
-        std::cout << "WARNING: to many thread " << std::endl;
-        std::cout << "Hardware " << _hWMaxThreads <<" threads." << std::endl;
-    }
-pool.reset(_hWMaxThreads);
+//    int _hWMaxThreads = std::thread::hardware_concurrency();
+//    if (_hWMaxThreads < maxThreads){
+//        std::cout << "WARNING: to many thread " << std::endl;
+//        std::cout << "Hardware " << _hWMaxThreads <<" threads." << std::endl;
+//    }
+pool.reset(maxThreads);
 //TODO проверить в данном случае требуется ли ограничение по количеству потоков, и если да то на каком
     
     mAllDocLengthInWord = 0;

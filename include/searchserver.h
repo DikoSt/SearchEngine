@@ -27,7 +27,7 @@ private:
     InvertedIndex mIndex;
 
     int mMethodOfSearch = 1;
-    int maxRequests = 5;
+    int mMaxRequests = 5;
 
     void PrintResult(const std::vector<std::vector<RelativeIndex>> &result);
 

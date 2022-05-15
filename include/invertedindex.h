@@ -62,6 +62,9 @@ public:
  */
     void UpdateDocumentBase(const std::vector<std::string> &fileNames);
 
+    void ToIndexDocNT(const size_t &docId, const std::string &docFileName);
+
+
 /**
  * Метод выполняет обновление или заполнение базы документов, по которой будем совершать поиск.
  * Выполняется в несколькоих потоках

@@ -6,8 +6,6 @@
 #include "converterJSON.h"
 #include "exception.h"
 #include "makrosforexception.h"
-#include "structures.h"
-//#include "testfiles.h"
 
 ConverterJSON converterJson;
 std::string fileNameTest = "test.json";
@@ -16,8 +14,9 @@ std::string fileNameTest = "test.json";
 nlohmann::json configFile = {
         {"config", {
                    {"max_responses", 15},
+                   {"method_search", 1},
                    {"name", "TestAppName"},
-                   {"version", "0.0"}
+                   {"version", "0.1"}
                    }
         },
         {"files", {
@@ -50,7 +49,7 @@ TEST(converterJSON, GetNameOfApp){
 TEST(converterJSON, GetVersionApp){
     SaveTestJsonFile(fileNameTest, configFile);
     converterJson.SetConfigFileName(fileNameTest);
-    EXPECT_EQ("0.0", converterJson.GetVersionApp());
+    EXPECT_EQ("0.1", converterJson.GetVersionApp());
   std::remove (fileNameTest.c_str());
 }
 
@@ -216,8 +215,14 @@ TEST(converterJSON, PutAnswers) {
 
 }
 
+TEST(converterJSON, GetFileNames){
+    SaveTestJsonFile(fileNameTest, configFile);
+    converterJson.SetConfigFileName(fileNameTest);
+    std::vector<std::string> expected = {"resource\\file00001.txt",
+                                         "resource\\file00002.txt",
+                                         "resource\\file00003.txt"};
+    EXPECT_EQ(expected, converterJson.GetFileNames());
+    std::remove (fileNameTest.c_str());
+}
 
-// TEST(converterJSON, GetTextDocuments_WorkTime){
-//     EXPECT_EQ(converterJson.isValidVersion(), true);
-//     converterJson.GetTextDocuments();
-// }
+

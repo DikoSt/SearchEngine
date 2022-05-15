@@ -11,6 +11,7 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(../lib/nlohmann_json/include)
 include_directories(../include)
 include_directories(../src)
+include_directories(../lib/thread-pool-2.0.0)
 
 
 # 'Google_Tests_run' is the target name
@@ -18,24 +19,23 @@ include_directories(../src)
 
 add_executable(Google_Tests_All_Test
         limits_test.cpp
-		
-        converterJSONtests.cpp
-        ../src/converterJSON.cpp
-        ../include/converterJSON.h
-		
         invertedIndexTests.cpp
         ../src/invertedindex.cpp
         ../include/invertedindex.h
-		
+
         searchServerTests.cpp
         ../src/searchserver.cpp
         ../include/searchserver.h
-		
-        splitWordTest.cpp
+
+
+        converterJSONtests.cpp
+        ../src/converterJSON.cpp
+        ../include/converterJSON.h
         ../src/stringutilites.cpp
         ../include/stringutilites.h
 
          makrosforexception.h)
+target_link_libraries(Google_Tests_All_Test gtest gtest_main)
 
 add_executable(GTests_Limits_Test limits_test.cpp)
 target_link_libraries(GTests_Limits_Test gtest gtest_main)

@@ -4,23 +4,55 @@
 #include <iostream>
 #include <string>
 #include "gtest/gtest.h"
+#include <fstream>
 #include "invertedindex.h"
 #include "stringutilites.h"
+#define MULTI_THREAD
+#define MAX_THREAD 4
 
 using namespace std;
+string GenerateFileName(const string &fileName, int numberFile){
+    return fileName +
+    std::string(3-std::to_string(numberFile).size(), '0') + std::to_string(numberFile)+".txt";
+}
 
 void TestInvertedIndexFunctionality(
-        const vector<string>& docs,
+        const vector<string>& Docs,
         const vector<string>& requests,
         const std::vector<vector<Entry>>& expected)
 {
     std::vector<std::vector<Entry>> result;
+    std::vector<std::string> fileNames({});
     InvertedIndex idx;
-    idx.UpdateDocumentBase(docs);
+
+    std::fstream file;
+// создадим файлы для проверки
+    int numberFile = 1;
+    for (const auto &oneDoc:Docs){
+        string fileName = GenerateFileName("testfile", numberFile);
+        fileNames.push_back(fileName);
+        file.open(fileName, std::ios::out);
+        file << oneDoc;
+        file.close();
+        numberFile++;
+    }
+
+#ifdef MULTI_THREAD
+    idx.UpdateDocumentBase(fileNames, MAX_THREAD);
+#else
+    idx.UpdateDocumentBase(fileNames);
+#endif
+
+//удалим ненужные файлы
+for (const auto&fileName:fileNames){
+    std::remove(fileName.c_str());
+}
+
     for(auto& request : requests) {
         std::vector<Entry> word_count = idx.GetWordCount(request);
         result.push_back(word_count);
     }
+
     ASSERT_EQ(result, expected);
 };
 
@@ -45,9 +77,9 @@ TEST(TestCaseInvertedIndex, TestBasic2) {
             "milk milk milk milk water water water",
             "milk water water",
             "milk milk milk milk milk water water water water water",
-            "Americano Cappuccino"
+            "americano cappuccino"
     };
-    const vector<string> requests = {"milk", "water", "Cappuccino"};
+    const vector<string> requests = {"milk", "water", "cappuccino"};
     const vector<vector<Entry>> expected = {
             {
                     {0, 4}, {1, 1}, {2, 5}
@@ -98,6 +130,84 @@ TEST(TestCaseInvertedIndex, TestInvertedIndexFile) {
     TestInvertedIndexFunctionality(docs, requests, expected);
 }
 
-TEST(TestCaseInvertedIndex, FromFiles){
+TEST(TestCaseInvertedIndex, TestManyFFiles) {
+    /** Файлы будем генерировать и создавать прямо здесь
+     * много и разных разной длины со словами разной длины
+     */
+     const int AMOUNT_FILES = 500;
+     const int MAX_CHAR_WORD = 100;
+     const int MIN_WORD_DOC = 10;
+     const int MAX_WORD_DOC = 1000;
+    std::vector<std::string> fileNames;
+    std::fstream file;
+// создадим файлы для проверки
+    for (int numberFile = 1; numberFile <= AMOUNT_FILES; ++numberFile){
+
+        int lengthDoc = MIN_WORD_DOC + std::rand()%(MAX_WORD_DOC-MIN_WORD_DOC); // будем указывать в словах
+        std::string lineDoc;
+        while (lengthDoc >= 0){
+            //генерация одного слова
+            int lengthWord = MAX_CHAR_WORD/2 + std::rand()%(MAX_CHAR_WORD/2);
+            while(lengthWord >=0){
+                lineDoc += char ('a'+rand()%26);
+                lengthWord--;
+            }
+            lineDoc +=' '; // слова разделяем пробелами
+            lengthDoc--;
+        }
+
+        string fileName = GenerateFileName("testfile", numberFile);
+        fileNames.push_back(fileName);
+        file.open(fileName, std::ios::out);
+        file << lineDoc;
+        file.close();
+    }
+
+//    for (auto &fName:fileNames){
+//        std::cout << fName << std::endl;
+//    }
+
+// выведем полученные результаты
+std::cout << "    T   |   1   |  2  	|   3   | 4  	| 5  	| 6  	|  6  	|  7 	|  8 	|  9  	| Avg" << endl;
+std::cout << "-----------------------------------------------------------------------------------------" <<std::endl;
+
+vector<int> timingProcess;
+
+    InvertedIndex idx;
+    timer tmr1;
+const int AMOUNT_MEASURE = 10;
+int totalTime = 0;
+    std::cout << "1";
+    for (int i=0;i<AMOUNT_MEASURE;++i) {
+        tmr1.start();
+        idx.UpdateDocumentBase(fileNames);
+        tmr1.stop();
+        totalTime += tmr1.ms();
+        std::cout << "\t| " <<tmr1.ms()<< " ";
+    }
+    std::cout <<std::setprecision(3)<< "\t| " << static_cast<double>(totalTime)/AMOUNT_MEASURE << std::endl;
+
+    for (int t=2;t<12; t=t+2) {
+        std::cout << t;
+        totalTime = 0;
+        for (int i = 0; i < AMOUNT_MEASURE; ++i) {
+            tmr1.start();
+            idx.UpdateDocumentBase(fileNames, t);
+            tmr1.stop();
+            totalTime += tmr1.ms();
+            std::cout << "\t| " << tmr1.ms() << " ";
+        }
+        std::cout <<std::setprecision(3)<< "\t| " << static_cast<double>(totalTime) / AMOUNT_MEASURE << std::endl;;
+    }
+    std::cout << "-------------------------------------------------------" << std::endl;
+    std:: cout << "Amount documents: " << idx.GetDocCount() << std::endl;
+    std::cout << "Avarage length document(word): "  <<   idx.GetAVGDL() << std::endl;
+    std::cout << "maxinmum length word : " << MAX_CHAR_WORD <<std::endl;
+
+//удалим ненужные файлы
+    for (const auto&fileName:fileNames){
+        std::remove(fileName.c_str());
+    }
 
 }
+

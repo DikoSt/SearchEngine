@@ -38,7 +38,6 @@ add_executable(SearchEngine search_engine.cpp
         include/invertedindex.h
         src/searchserver.cpp
         include/searchserver.h
-        include/structures.h
         src/stringutilites.cpp
         include/stringutilites.h
         src/exception.cpp

@@ -30,8 +30,9 @@ std::vector<RelativeIndex> SearchServer::SearchByQuery_method2(const std::string
     //std::vector<Entry> findDocs = mIndex.GetWordCount(minEl->first); // вектор документов с минимальным вхождением
     std::vector<Entry> findDocs = mIndex.GetWordCount(countWordsOfQuery[0].first); // вектор документов с минимальным вхождением
 
-for (const auto &[word, count]:countWordsOfQuery) {
-    std::vector<Entry> nextDocs = mIndex.GetWordCount(word);
+for (auto it = countWordsOfQuery.begin()+1; it!=countWordsOfQuery.end();++it){
+//    for (const auto &[word, count]:countWordsOfQuery) {
+    std::vector<Entry> nextDocs = mIndex.GetWordCount(it->first); //word
     //если документа из findDocs нет среди nextDocs, то этот документ удалям из findDocs
 
     auto docIdWordIt = findDocs.begin()++;
@@ -54,7 +55,7 @@ for (const auto &[word, count]:countWordsOfQuery) {
     std::multimap<size_t, size_t, std::greater<size_t>> sortResult;
     for (const auto &[docID, rank]:findDocs){
         sortResult.insert({rank,docID});
-        if (sortResult.size() > maxRequests){
+        if (sortResult.size() > mMaxRequests){
             sortResult.erase(std::prev(sortResult.end()));
         }
     }
@@ -139,7 +140,7 @@ std::vector<RelativeIndex> SearchServer::SearchByQuery_method3(const std::string
     std::multimap<size_t, size_t, std::greater<size_t>> sortResult;
     for (const auto &[docID, rank]:docIdFreqWord){
         sortResult.insert({rank,docID});
-        if (sortResult.size() > maxRequests){
+        if (sortResult.size() > mMaxRequests){
             sortResult.erase(std::prev(sortResult.end()));
         }
     }
@@ -203,7 +204,8 @@ std::vector<RelativeIndex> SearchServer::SearchByQuery_BM25(const std::string &q
     if (scoresDocs.empty()) return std::vector<RelativeIndex>();
     // std::cout << std::endl << "query: \""<<query << "\"" << std::endl;
     double maxRank = scoresDocs.rbegin()->first;
-    for (auto item = scoresDocs.rbegin(); item != scoresDocs.rend();++item){
+    int resultCount = 0;
+    for (auto item = scoresDocs.rbegin(); item != scoresDocs.rend()&& resultCount < mMaxRequests; ++item,++resultCount){
         if (item->first > 0 ){
           double normRank = std::round(item->first/maxRank*1000)/1000;
           result.push_back(RelativeIndex(item->second, normRank));
@@ -256,16 +258,18 @@ void SearchServer::SetMethodOfSearch(int mMethodOfSearch) {
         std::cerr << "WARNING! Search method must from 1 to 3 " << std::endl;
         std::cout << "Search method set 1" << std::endl;
         SearchServer::mMethodOfSearch = 1;
+    } else{
+            SearchServer::mMethodOfSearch = mMethodOfSearch;
     }
-    SearchServer::mMethodOfSearch = mMethodOfSearch;
 }
 
 void SearchServer::SetMaxRequests(int maxRequests) {
     if (maxRequests <=0 ) {
         std::cerr << "WARNING! Max request bust be greater 0" << std::endl;
         std::cout << "Max request set 5" << std::endl;
-        SearchServer::maxRequests = 5;
+        SearchServer::mMaxRequests = 5;
+    } else {
+        SearchServer::mMaxRequests = maxRequests;
     }
-    SearchServer::maxRequests = maxRequests;
 }
 

@@ -20,7 +20,7 @@ int main(){
 
 #ifdef CREATE_CONFIG_JSON
 
-    outputFile.open("../"+defaultConfigFileName);
+    outputFile.open(defaultConfigFileName);
 
     nlohmann::json config;
     std::string version = "0.1";
@@ -54,7 +54,7 @@ int main(){
     /** созданим файл requests.json */
     nlohmann::json requests;
 
-    outputFile.open("../" + defaultRequestsFileName);
+    outputFile.open(defaultRequestsFileName);
     if (outputFile.is_open()) {
         nlohmann::json listRequests = nlohmann::json::array();
 listRequests = {" willing  your voice rumbles  this universe never",

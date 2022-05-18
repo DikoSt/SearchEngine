@@ -75,7 +75,12 @@
 		copy ..\\resource\*.txt resource
 		copy ..\\resource\*.json .\ 
 
+Для запуска Unit-testов встроенных необходимо в папке build, ранее созданной выполнить следующее:
 
+	cmake --build . --config Release --target Google_Tests_All_Test
+	cd ..\\Release
+	Google_Tests_All_Test.exe
+		
 ### <a name="Конфигурирование">Конфигурирование приложения</a>
 Основные настройки/конфигурация программы содержится в файле config.json.
 Файл должен располагаться в корневой директории приложения.

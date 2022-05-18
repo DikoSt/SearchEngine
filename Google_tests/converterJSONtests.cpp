@@ -156,20 +156,20 @@ TEST(converterJSON, PutAnswers) {
             {
                     RelativeIndex(0, 1),
                     RelativeIndex(1, 0.8),
-                    RelativeIndex(1, 0.9),
-                    RelativeIndex(1, 0.9)
+                    RelativeIndex(2, 0.9),
+                    RelativeIndex(3, 0.9)
             },
             {
                     RelativeIndex(0, 1),
                     RelativeIndex(1, 0.8),
-                    RelativeIndex(1, 0.9),
-                    RelativeIndex(1, 0.9)
+                    RelativeIndex(2, 0.9),
+                    RelativeIndex(3, 0.9)
             },
             {}
 
     };
-    answers[0] ;
-    converterJson.SetConfigFileName("config.json");
+    SaveTestJsonFile("testConfig.json", configFile ) ;
+    converterJson.SetConfigFileName("testConfig.json");
     converterJson.SetAnswerFileName("testAnswerFile.json");
     converterJson.PutAnswers(answers);
 
@@ -212,7 +212,9 @@ TEST(converterJSON, PutAnswers) {
                 + std::to_string(numberRequest),
                 item.key());
     }
-
+    file.close();
+std::remove("testConfig.json");
+std::remove("testAnswerFile.json");
 }
 
 TEST(converterJSON, GetFileNames){

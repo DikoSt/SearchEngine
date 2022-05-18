@@ -6,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "../config.h"
+#include "config.h"
 
 // пропустить все символы кроме букв
 #define SKIP_SPEC_SYMBOL

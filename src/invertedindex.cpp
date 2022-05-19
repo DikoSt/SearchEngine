@@ -223,7 +223,7 @@ size_t InvertedIndex::GetDocLength(const size_t &docID) {
     if (mDocLength.count(docID)) {
         return mDocLength.at(docID);
     } else {
-        return -1;
+        return 0;
     }
 }
 

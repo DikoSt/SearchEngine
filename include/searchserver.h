@@ -2,23 +2,29 @@
 // Created by Denis on 23.04.2022.
 //
 #pragma once
+
 #include <algorithm>
 #include "invertedindex.h"
 #include "stringutilites.h"
 
-struct RelativeIndex{
+struct RelativeIndex {
     size_t docId;
     double rank;
 
-    bool operator ==(const RelativeIndex& other) const {
+    bool operator==(const RelativeIndex &other) const {
         return (docId == other.docId && rank == other.rank);
     }
+
     RelativeIndex() = default;
-    RelativeIndex(size_t docId, double rank){
-        this->rank = rank; this->docId = docId;
+
+    RelativeIndex(size_t docId, double rank) {
+        this->rank = rank;
+        this->docId = docId;
     }
-    RelativeIndex(std::pair<size_t,double> __p){
-        this->rank = __p.second; this->docId = __p.first;
+
+    RelativeIndex(std::pair<size_t, double> __p) {
+        this->rank = __p.second;
+        this->docId = __p.first;
     }
 };
 
@@ -79,7 +85,7 @@ public:
 * @return возвращает отсортированный список релевантных ответов для
 * заданных запросов
 */
-    std::vector<std::vector<RelativeIndex>> Search(const std::vector<std::string>& queriesInput);
+    std::vector<std::vector<RelativeIndex>> Search(const std::vector<std::string> &queriesInput);
 
 /** Метод задания метода поиска
  * 1 -

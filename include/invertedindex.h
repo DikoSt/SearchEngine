@@ -11,16 +11,18 @@
 #include "thread_pool.hpp"
 #include "stringutilites.h"
 
-struct Entry{
+struct Entry {
     size_t docId, count;
 
     // Данный оператор необходим для проведения тестовых сценариев
-    bool operator ==(const Entry& other) const {
+    bool operator==(const Entry &other) const {
         return (docId == other.docId &&
                 count == other.count);
     }
+
     Entry() = default;
-    Entry(size_t docID, size_t Count):docId(docID), count(Count){};
+
+    Entry(size_t docID, size_t Count) : docId(docID), count(Count) {};
 };
 
 class InvertedIndex {
@@ -30,14 +32,15 @@ private:
     std::map<std::string, std::vector<Entry>> mFreqDictionary; //TF
     std::map<std::string, double> mIDF;
     std::map<size_t, int> mDocLength; // docId, Length of word
-    
+
     size_t mAllDocLengthInWord = 0;
-    double mAVGDL ; // avarage document length
-    
+    double mAVGDL; // avarage document length
+
     int mMaxWordInDocument = 1000;
-    int mMaxCharInWord = 100; 
+    int mMaxCharInWord = 100;
 
     void CalculateIDF();
+
     void CalcalateAVGDL();
 
 /**
@@ -45,17 +48,19 @@ private:
  * @param docId - идентификатор документа
  * @param textDocument - строка-текст документа
  */
-   void ToIndexDoc(const size_t &docId, const std::string &textDocument);
+    void ToIndexDoc(const size_t &docId, const std::string &textDocument);
 
 /** Чтение документа из файла
  * 
  * @param fileName - имя файла (полный путь к файлу)
  * @return std::string  - строка- соджержимое файла
  */
- 
-     std::string ReadDocument(const std::string &fileName);
+
+    std::string ReadDocument(const std::string &fileName);
+
 public:
     InvertedIndex() = default;
+
 /**
  * Метод для обновить или заполнить базу документов, по которой будем совершать поиск
  * @param fileNames - вектор строк-имён файлов для индексации
@@ -78,21 +83,22 @@ public:
  * @param word слово, частоту вхождений которого необходимо определить
  * @return возвращает подготовленный список с частотой слов
  */
-    std::vector<Entry> GetWordCount(const std::string& word);
+    std::vector<Entry> GetWordCount(const std::string &word);
+
 /**
  * Метод определяет количество вхождений слова word в документ docId
  * @param word - слово количество вхождение которого определяем
  * @param docId  - номер документа в котоом определяем количество вхождений слова word
  * @return количество вхождение слова word  в документ docId
  */
-    int GetWordCountInDoc(const std::string& word, size_t docId);
+    int GetWordCountInDoc(const std::string &word, size_t docId);
 
 /**
  * Метод определяет количество вхождений слова word в загруженной базе документов
  * @param word слово, количество вхождений которого необходимо определить
  * @return число количество вхождений солова во всех документах
  */
-    size_t GetWordCountAllDocs(const std::string& word);
+    size_t GetWordCountAllDocs(const std::string &word);
 
 /**
  * Метод возвращает среднюю длинну документа в списке поиска в словах
@@ -132,24 +138,24 @@ public:
  *
  * @param _MaxWordInDocument - максимальное количество слов в документе
  */
-void SetMaxWordInDocument(int _MaxWordInDocument);
+    void SetMaxWordInDocument(int _MaxWordInDocument);
 
 /** Мкетод возвращает текущее количество обрабатываемых слов в документе
  *
  * @return - установленное максимальное количество слов в документе
  */
 
-int GetMaxWordInDocument(){return mMaxWordInDocument;};
+    int GetMaxWordInDocument() { return mMaxWordInDocument; };
 
 /** Метод задания уставки максимального количества символов в слове
  * @param _MaxCharInWord - - максимальное количество символов в слове
  */
-void SetMaxCharInWord(int _MaxCharInWord);
+    void SetMaxCharInWord(int _MaxCharInWord);
 
 /** Метод возвращает установленное количество символов в слове
 * @return - установленное максимальное количество символов в слове
 */
 
-int GetMaxCharInWord(){return mMaxCharInWord;};
+    int GetMaxCharInWord() { return mMaxCharInWord; };
 
 };

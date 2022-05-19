@@ -5,25 +5,25 @@
 #include "converterJSON.h"
 #include <fstream>
 
-ConverterJSON::ConverterJSON(   std::string pathConfigJSON,
-                                std::string pathRequestJSON,
-                                std::string pathAnswersJSON):
-                                mConfigFileName(pathConfigJSON),
-                                mRequestsFileName(pathRequestJSON),
-                                mAnswerFileName(pathAnswersJSON){}
+ConverterJSON::ConverterJSON(std::string pathConfigJSON,
+                             std::string pathRequestJSON,
+                             std::string pathAnswersJSON) :
+        mConfigFileName(pathConfigJSON),
+        mRequestsFileName(pathRequestJSON),
+        mAnswerFileName(pathAnswersJSON) {}
 
 void ConverterJSON::ReadConfig() {
     nlohmann::json configJSONFile;
     std::fstream mFile;
 
     mFile.open(mConfigFileName, std::ios::in);
-    if (!mFile.is_open()){
+    if (!mFile.is_open()) {
         throw ExceptionError("Unable read file " + mConfigFileName);
     } else {
         try {
             mFile >> configJSONFile;
-        }catch(...){
-            throw ExceptionError("File "+mConfigFileName+" corrupted");
+        } catch (...) {
+            throw ExceptionError("File " + mConfigFileName + " corrupted");
         }
         mFile.close();
     }
@@ -35,26 +35,29 @@ void ConverterJSON::ReadConfig() {
 
         mFileNames = std::vector<std::string>(configJSONFile["files"].begin(), configJSONFile["files"].end());
         isConfigured = true;
-    }catch(...){
-        throw ExceptionError("Error config in "+mConfigFileName+" file.");
+    } catch (...) {
+        throw ExceptionError("Error config in " + mConfigFileName + " file.");
     }
 }
 
-void ConverterJSON::PutAnswers(const std::vector<std::vector<RelativeIndex>> &answers){
-nlohmann::json answerJSON;
+void ConverterJSON::PutAnswers(const std::vector<std::vector<RelativeIndex>> &answers) {
+    nlohmann::json answerJSON;
 
-    if (!isConfigured){
+    if (!isConfigured) {
         ReadConfig();
     }
 
-int numberRequest = 1;
-    for(auto &requestAnswer:answers) {
+    int numberRequest = 1;
+    for (auto &requestAnswer:answers) {
         int response = 0;
         nlohmann::json relevance = nlohmann::json::array();
-        for (auto item2=requestAnswer.begin(); item2!=requestAnswer.end() && response < mMaxResponses; ++item2, ++response) {
-            relevance.push_back({{"docID", item2->docId},{"rank",item2->rank}});
+        for (auto item2 = requestAnswer.begin();
+             item2 != requestAnswer.end() && response < mMaxResponses; ++item2, ++response) {
+            relevance.push_back({{"docID", item2->docId},
+                                 {"rank",  item2->rank}});
         }
-        std::string strNumberRequest = "request" + std::string(3-std::to_string(numberRequest).size(), '0') + std::to_string(numberRequest);
+        std::string strNumberRequest =
+                "request" + std::string(3 - std::to_string(numberRequest).size(), '0') + std::to_string(numberRequest);
 
         if (!requestAnswer.empty()) {
             answerJSON["answers"][strNumberRequest]["result"] = true;
@@ -67,20 +70,22 @@ int numberRequest = 1;
     }
     WriteAnswersJSON(answerJSON);
 }
-void ConverterJSON::WriteAnswersJSON(const nlohmann::json &j){
+
+void ConverterJSON::WriteAnswersJSON(const nlohmann::json &j) {
     std::fstream mFile;
-        mFile.open(mAnswerFileName, std::ios::out);
-        if (!mFile.is_open()){
-            throw ExceptionError("Unable to create file answers.json");
-        } else{
-            try {
-                mFile << j.dump(4);
-                mFile.close();
-            } catch (...) {
-                throw ExceptionError("Unable to write file answers.json");
-            }
+    mFile.open(mAnswerFileName, std::ios::out);
+    if (!mFile.is_open()) {
+        throw ExceptionError("Unable to create file answers.json");
+    } else {
+        try {
+            mFile << j.dump(4);
+            mFile.close();
+        } catch (...) {
+            throw ExceptionError("Unable to write file answers.json");
         }
+    }
 }
+
 std::vector<std::string> ConverterJSON::GetRequests() {
     nlohmann::json requestJSON;
     std::fstream mFile;
@@ -92,7 +97,7 @@ std::vector<std::string> ConverterJSON::GetRequests() {
     } else {
         try {
             mFile >> requestJSON;
-        }catch(...){
+        } catch (...) {
             if (mFile.is_open()) mFile.close();
             throw ExceptionError("Error requests in " + mRequestsFileName + " file");
         }
@@ -111,8 +116,8 @@ std::vector<std::string> ConverterJSON::GetRequests() {
     return std::vector<std::string>(requestJSON["requests"].begin(), endRequestsList);
 };
 
-std::vector<std::string> ConverterJSON::GetFileNames(){
-    if (!isConfigured){
+std::vector<std::string> ConverterJSON::GetFileNames() {
+    if (!isConfigured) {
         ReadConfig();
     }
 
@@ -123,64 +128,70 @@ std::vector<std::string> ConverterJSON::GetFileNames(){
     return mFileNames;
 }
 
-int ConverterJSON::GetResponsesLimit(){
+int ConverterJSON::GetResponsesLimit() {
     if (!isConfigured) {
         ReadConfig();
     }
     return mMaxResponses;
 }
-std::string ConverterJSON::GetNameOfApp(){
-    if (!isConfigured){
+
+std::string ConverterJSON::GetNameOfApp() {
+    if (!isConfigured) {
         ReadConfig();
     }
     return mNameOfApp;
 }
-std::string ConverterJSON::GetVersionApp(){
-    if (!isConfigured){
+
+std::string ConverterJSON::GetVersionApp() {
+    if (!isConfigured) {
         ReadConfig();
     }
     return mVersionApp;
 }
+
 bool ConverterJSON::IsValidVersion() {
     GetVersionApp();
     return mVersionApp == VERSION_APP;
 }
-void ConverterJSON::SetConfigFileName(const std::string &fileName){
-        mConfigFileName = fileName;
-		isConfigured = false;
-    }
-void ConverterJSON::SetRequestsFileName(const std::string &fileName){
-        mRequestsFileName = fileName;
-		isConfigured = false;
-    }
-void ConverterJSON::SetAnswerFileName(const std::string &fileName){
-        mAnswerFileName = fileName;
-		isConfigured = false;
-    }
+
+void ConverterJSON::SetConfigFileName(const std::string &fileName) {
+    mConfigFileName = fileName;
+    isConfigured = false;
+}
+
+void ConverterJSON::SetRequestsFileName(const std::string &fileName) {
+    mRequestsFileName = fileName;
+    isConfigured = false;
+}
+
+void ConverterJSON::SetAnswerFileName(const std::string &fileName) {
+    mAnswerFileName = fileName;
+    isConfigured = false;
+}
 
 void ConverterJSON::SetMethodOfSearch(int methodOfSearch) {
-    if (methodOfSearch < 1 || methodOfSearch > 3){
+    if (methodOfSearch < 1 || methodOfSearch > 3) {
         std::cerr << "WARNING! Method of search maust be from 1 to 3" << std::endl;
         std::cout << "Method search set by 1";
     }
     mMethodOfSearch = methodOfSearch;
 }
 
-int ConverterJSON::GetMethodOfSearch(){
-    if (!isConfigured){
+int ConverterJSON::GetMethodOfSearch() {
+    if (!isConfigured) {
         ReadConfig();
     }
     return mMethodOfSearch;
 }
 
-void ConverterJSON::SetMaxResponses(int newMaxResponses){
-    if (mMaxResponses <= 0){
-        std::cout <<"WARNING!: max_responses cannot be less than or equal to zero"<<std::endl;
-        std::cout <<"set max_responses = 5" << std::endl;
+void ConverterJSON::SetMaxResponses(int newMaxResponses) {
+    if (mMaxResponses <= 0) {
+        std::cout << "WARNING!: max_responses cannot be less than or equal to zero" << std::endl;
+        std::cout << "set max_responses = 5" << std::endl;
         mMaxResponses = 5;
-    }else if (mMaxResponses > MAX_REQUESTS){
-        std::cout <<"WARNING!: max_responses cannot be grether than " + MAX_REQUESTS <<std::endl;
-        std::cout <<"set max_responses = " + MAX_REQUESTS << std::endl;
+    } else if (mMaxResponses > MAX_REQUESTS) {
+        std::cout << "WARNING!: max_responses cannot be grether than " + MAX_REQUESTS << std::endl;
+        std::cout << "set max_responses = " + MAX_REQUESTS << std::endl;
         mMaxResponses = MAX_REQUESTS;
     }
     mMaxResponses = newMaxResponses;

@@ -3,7 +3,7 @@
 // макрос для проверки генерации исключения и сообщения которое оно
 // генерирует
 
-#define ASSERT_EXCEPTION( TRY_BLOCK, EXCEPTION_TYPE, MESSAGE )        \
+#define ASSERT_EXCEPTION(TRY_BLOCK, EXCEPTION_TYPE, MESSAGE)        \
 try                                                                   \
 {                                                                     \
     TRY_BLOCK                                                         \

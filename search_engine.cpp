@@ -6,32 +6,32 @@
 #include "exception.h"
 
 int main() {
-ConverterJSON converterJson;
-InvertedIndex invertedIndex;
+    ConverterJSON converterJson;
+    InvertedIndex invertedIndex;
 
-try {
-    if (!converterJson.IsValidVersion()) {
-        std::cerr << "Version application not equeal"<< std::endl;
-        std::cout << "Exit with error." << std::endl;
-        return 0;
+    try {
+        if (!converterJson.IsValidVersion()) {
+            std::cerr << "Version application not equeal" << std::endl;
+            std::cout << "Exit with error." << std::endl;
+            return 0;
+        }
+
+        std::cout << "Start " << converterJson.GetNameOfApp() << std::endl;
+        std::cout << "Version: " << converterJson.GetVersionApp() << std::endl;
+        std::cout << "Max request limit: " << converterJson.GetResponsesLimit() << std::endl;
+        std::cout << "Method search: " << converterJson.GetMethodOfSearch() << std::endl;
+
+        invertedIndex.UpdateDocumentBase(converterJson.GetFileNames(), 2);
+    } catch (ExceptionError &e) {
+        std::cerr << e.what() << std::endl;
+        exit(0);
     }
 
-    std::cout << "Start " << converterJson.GetNameOfApp() << std::endl;
-    std::cout << "Version: " << converterJson.GetVersionApp() << std::endl;
-    std::cout << "Max request limit: " << converterJson.GetResponsesLimit() << std::endl;
-    std::cout << "Method search: " << converterJson.GetMethodOfSearch() << std::endl;
-
-    invertedIndex.UpdateDocumentBase(converterJson.GetFileNames(), 2);
-} catch (ExceptionError &e) {
-    std::cerr << e.what() << std::endl;
-    exit(0);
-}
-
-SearchServer searchServer(invertedIndex);
+    SearchServer searchServer(invertedIndex);
 
     searchServer.SetMethodOfSearch(converterJson.GetMethodOfSearch());
     searchServer.SetMaxRequests(converterJson.GetResponsesLimit());
-    auto  queries =converterJson.GetRequests();
+    auto queries = converterJson.GetRequests();
     auto rIndex = searchServer.Search(queries);
     converterJson.PutAnswers(rIndex);
     return 0;

@@ -11,6 +11,7 @@
 #include "searchserver.h"
 #include "stringutilites.h"
 #include "exception.h"
+
 /**
 * Класс для работы с JSON-файлами
 */
@@ -40,13 +41,14 @@ private:
  * Метод записывает файл answer.json
  * @param answerJSON
  */
-    void WriteAnswersJSON(const nlohmann::json&);
+    void WriteAnswersJSON(const nlohmann::json &);
 
 public:
     //ConverterJSON();
-    ConverterJSON(  std::string pathConfigJSON = defaultConfigFileName,
-                    std::string pathRequestJSON = defaultRequestsFileName,
-                    std::string pathAnswersJSON = defaultAnswerFileName);
+    ConverterJSON(std::string pathConfigJSON = defaultConfigFileName,
+                  std::string pathRequestJSON = defaultRequestsFileName,
+                  std::string pathAnswersJSON = defaultAnswerFileName);
+
     ~ConverterJSON() = default;
 
 /*** Метод получения запросов из файла requests.json
@@ -91,10 +93,15 @@ public:
     void PutAnswers(const std::vector<std::vector<RelativeIndex>> &answers);
 
     void SetConfigFileName(const std::string &fileName);
+
     void SetRequestsFileName(const std::string &fileName);
+
     void SetAnswerFileName(const std::string &fileName);
+
     int GetMethodOfSearch();
+
     void SetMethodOfSearch(int methodOfSearch);
+
     void SetMaxResponses(int newMaxResponses);
 };
 

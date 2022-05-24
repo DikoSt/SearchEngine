@@ -135,15 +135,16 @@ TEST(TestCaseInvertedIndex, TestInvertedIndexFile) {
 
     TestInvertedIndexFunctionality(docs, requests, expected);
 }
-
+/*
 TEST(TestCaseInvertedIndex, TestManyFFiles) {
-    /** Файлы будем генерировать и создавать прямо здесь
-     * много и разных разной длины со словами разной длины
-     */
-    const int AMOUNT_FILES = 500;
+    // Файлы будем генерировать и создавать прямо здесь
+    // много и разных разной длины со словами разной длины
+    //
+    const int AMOUNT_FILES = 100;
     const int MAX_CHAR_WORD = 100;
     const int MIN_WORD_DOC = 10;
     const int MAX_WORD_DOC = 1000;
+    const int AMOUNT_MEASURE = 5;
     std::vector<std::string> fileNames;
     std::fstream file;
 // создадим файлы для проверки
@@ -174,16 +175,16 @@ TEST(TestCaseInvertedIndex, TestManyFFiles) {
 //    }
 
 // выведем полученные результаты
-    std::cout << "    T   |   1   |  2  	|   3   | 4  	| 5  	| 6  	|  6  	|  7 	|  8 	|  9  	| Avg"
+    std::cout << "    T   |   1   |  2  	|   3   | 4  	| 5  	| Avg"
               << endl;
-    std::cout << "-----------------------------------------------------------------------------------------"
+    std::cout << "-------------------------------------------------------"
               << std::endl;
 
     vector<int> timingProcess;
 
     InvertedIndex idx;
     timer tmr1;
-    const int AMOUNT_MEASURE = 10;
+    
     int totalTime = 0;
     std::cout << "1";
     for (int i = 0; i < AMOUNT_MEASURE; ++i) {
@@ -219,3 +220,4 @@ TEST(TestCaseInvertedIndex, TestManyFFiles) {
 
 }
 
+*/

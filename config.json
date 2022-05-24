@@ -15,10 +15,6 @@
         "resource/file6.txt",
         "resource/file7.txt",
         "resource/file8.txt",
-        "resource/file9.txt",
-		"resource/file10.txt",
-		"resource/file11.txt",
-		"resource/file12.txt",
-		"resource/file13.txt"
+        "resource/file9.txt"
     ]
 }

@@ -38,7 +38,17 @@ std::vector<RelativeIndex> SearchServer::SearchByQuery_method2(const std::string
 
         auto docIdWordIt = findDocs.begin()++;
         size_t i = 0;
-        while (docIdWordIt != findDocs.end()) {
+        auto endOfListFindDocs = findDocs.end();
+         bool resCompare = docIdWordIt != endOfListFindDocs;
+                 findDocs.erase(docIdWordIt);
+                 docIdWordIt++;
+          resCompare = docIdWordIt != endOfListFindDocs;
+        //         findDocs.erase(docIdWordIt);
+        //  resCompare = docIdWordIt != endOfListFindDocs;
+        //         findDocs.erase(docIdWordIt);
+        //  resCompare = docIdWordIt != endOfListFindDocs;
+        
+        while (docIdWordIt != endOfListFindDocs) {
             auto it = std::find_if(nextDocs.begin(), nextDocs.end(), [docIdWordIt](const Entry &a) {
                 return a.docId == docIdWordIt->docId;
             });

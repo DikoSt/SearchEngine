@@ -17,52 +17,28 @@
 */
 class ConverterJSON {
 private:
-
     bool isConfigured = false;
-// пути к файлам 
-    std::string mAnswerFileName;
-    std::string mConfigFileName;
-    std::string mRequestsFileName;
+// пути к файлам
+    std::string mAnswerFileName = defaultAnswerFileName;
+    std::string mConfigFileName = defaultConfigFileName;
+    std::string mRequestsFileName = defaultRequestsFileName;
 
 // переменные кофигурации поисковика и т.п.
-    std::string mNameOfApp;
-    std::string mVersionApp;
-    int mMaxResponses = 5;
-    int mMethodOfSearch = 1;
-    std::vector<std::string> mFileNames;
-
     nlohmann::json mJsonConfig;
-    nlohmann::json mJsonRequests;
 
-/** чтение конфигурационных данных из файла config.json
- * устанавливаются соответсвущие переменные,
- * при удачном чтении устанавливается isConfigured = true;
- */
+    void ReadJsonFile(const std::string &fileName, nlohmann::json &jsonResult);
+    void WriteJsonFile(const std::string &fileName, nlohmann::json &jsonToWrite);
+
+ /** чтение конфигурационных данных из файла config.json
+  * при удачном чтении устанавливается isConfigured = true;
+  */
     void ReadConfig();
 
-/**
- * Метод записывает файл answer.json
- * @param answerJSON
- */
-    void WriteAnswersJSON(const nlohmann::json &);
+    nlohmann::json CreatAnswerJson(const std::vector<std::vector<RelativeIndex>> &answers);
 
 public:
-    //ConverterJSON();
-    ConverterJSON(std::string pathConfigJSON = defaultConfigFileName,
-                  std::string pathRequestJSON = defaultRequestsFileName,
-                  std::string pathAnswersJSON = defaultAnswerFileName);
-
+    ConverterJSON();
     ~ConverterJSON() = default;
-/** Метод чтения файла конфигурации
- * 
-*/
-    bool ReadConfig();
-
-/** Метод чтения файла запросов
- * 
-*/
-    bool ReadConfig();
-
 /*** Метод получения запросов из файла requests.json
 * @return возвращает список запросов из файла requests.json
 */

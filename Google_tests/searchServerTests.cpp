@@ -79,19 +79,6 @@ void TestSearchServerFunctionality(
     ASSERT_EQ(result, expected);
 };
 
-
-
-
-TEST(TestCaseMapCompare, TwoSameElements) {
-    std::map<int, float> firstMap{{1, 1},
-                                  {2, 2},
-                                  {3, 3}};
-    std::map<int, float> secondMap{{1, 1},
-                                   {2, 2},
-                                   {3, 3}};
-    ASSERT_EQ(firstMap, secondMap);
-}
-
 /// TEST Method 1 (BM_25) ***************************************************************************************
 
 TEST(TestCaseSearchServer, BM25_Test_EmptyQuery) {

@@ -30,13 +30,16 @@ std::vector<RelativeIndex> SearchServer::SearchByQuery_method2(const std::string
     //std::vector<Entry> findDocs = mIndex.GetWordCount(minEl->first); // вектор документов с минимальным вхождением
     std::vector<Entry> findDocs = mIndex.GetWordCount(
             countWordsOfQuery[0].first); // вектор документов с минимальным вхождением
+    if (findDocs.empty()) {
+        return std::vector<RelativeIndex>();
+        }
 
     for (auto it = countWordsOfQuery.begin() + 1; it != countWordsOfQuery.end(); ++it) {
 //    for (const auto &[word, count]:countWordsOfQuery) {
         std::vector<Entry> nextDocs = mIndex.GetWordCount(it->first); //word
         //если документа из findDocs нет среди nextDocs, то этот документ удалям из findDocs
 
-        auto docIdWordIt = findDocs.begin()++;
+        auto docIdWordIt = findDocs.begin() + 1;
         size_t i = 0;
         auto endOfListFindDocs = findDocs.end();
          bool resCompare = docIdWordIt != endOfListFindDocs;
@@ -54,10 +57,12 @@ std::vector<RelativeIndex> SearchServer::SearchByQuery_method2(const std::string
             });
             if (it == nextDocs.end()) {
                 findDocs.erase(docIdWordIt);
+                endOfListFindDocs = findDocs.end();
             } else {
                 docIdWordIt->count += it->count;
                 docIdWordIt++;
             }
+            bool resCompare = docIdWordIt != endOfListFindDocs;
         }
         if (findDocs.empty()) return std::vector<RelativeIndex>();
     }

@@ -39,16 +39,14 @@ std::vector<RelativeIndex> SearchServer::SearchByQuery_method2(const std::string
         std::vector<Entry> nextDocs = mIndex.GetWordCount(it->first); //word
         //если документа из findDocs нет среди nextDocs, то этот документ удалям из findDocs
 
-        auto docIdWordIt = findDocs.begin() + 1;
+        auto docIdWordIt = findDocs.begin();
         size_t i = 0;
-        auto endOfListFindDocs = findDocs.end();         
-        while (docIdWordIt != endOfListFindDocs) {
+        while (docIdWordIt != findDocs.end()) {
             auto it = std::find_if(nextDocs.begin(), nextDocs.end(), [docIdWordIt](const Entry &a) {
                 return a.docId == docIdWordIt->docId;
             });
             if (it == nextDocs.end()) {
                 findDocs.erase(docIdWordIt);
-                endOfListFindDocs = findDocs.end();
             } else {
                 docIdWordIt->count += it->count;
                 docIdWordIt++;

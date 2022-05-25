@@ -31,6 +31,9 @@ private:
     int mMethodOfSearch = 1;
     std::vector<std::string> mFileNames;
 
+    nlohmann::json mJsonConfig;
+    nlohmann::json mJsonRequests;
+
 /** чтение конфигурационных данных из файла config.json
  * устанавливаются соответсвущие переменные,
  * при удачном чтении устанавливается isConfigured = true;
@@ -50,6 +53,15 @@ public:
                   std::string pathAnswersJSON = defaultAnswerFileName);
 
     ~ConverterJSON() = default;
+/** Метод чтения файла конфигурации
+ * 
+*/
+    bool ReadConfig();
+
+/** Метод чтения файла запросов
+ * 
+*/
+    bool ReadConfig();
 
 /*** Метод получения запросов из файла requests.json
 * @return возвращает список запросов из файла requests.json

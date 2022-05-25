@@ -21,15 +21,15 @@ void ConverterJSON::ReadConfig() {
         throw ExceptionError("Unable read file " + mConfigFileName);
     } else {
         try {
-            mFile >> configJSONFile;
+            mFile >> mJsonConfig;
         } catch (...) {
             throw ExceptionError("File " + mConfigFileName + " corrupted");
         }
         mFile.close();
     }
     try {
-        mVersionApp = configJSONFile["config"]["version"];
-        mNameOfApp = configJSONFile["config"]["name"];
+        mVersionApp = mJsonConfig["config"]["version"];
+        mNameOfApp = mJsonConfig["config"]["name"];
         SetMaxResponses(configJSONFile["config"]["max_responses"]);
         SetMethodOfSearch(configJSONFile["config"]["method_search"]);
 
@@ -117,20 +117,31 @@ std::vector<std::string> ConverterJSON::GetRequests() {
 };
 
 std::vector<std::string> ConverterJSON::GetFileNames() {
-    if (!isConfigured) {
-        ReadConfig();
-    }
-
-    if (mFileNames.empty()) {
-        std::cerr << "WARNING: List of filenames is empty." << std::endl;
+    if (mJsonConfig.empty()) {
         return std::vector<std::string>();
     }
-    return mFileNames;
+       try {
+         return fileNames = std::vector<std::string>(mJsonConfig["files"].begin(), mJsonConfig["files"].end());
+    } catch (...) {
+        //TODO error в вектор ошибок записывать
+        throw ExceptionError("Error config in " + mConfigFileName + " file.");
+    }
 }
 
 int ConverterJSON::GetResponsesLimit() {
     if (!isConfigured) {
         ReadConfig();
+    }
+        try {
+        mVersionApp = mJsonConfig["config"]["version"];
+        mNameOfApp = mJsonConfig["config"]["name"];
+        SetMaxResponses(configJSONFile["config"]["max_responses"]);
+        SetMethodOfSearch(configJSONFile["config"]["method_search"]);
+
+        mFileNames = std::vector<std::string>(configJSONFile["files"].begin(), configJSONFile["files"].end());
+        isConfigured = true;
+    } catch (...) {
+        throw ExceptionError("Error config in " + mConfigFileName + " file.");
     }
     return mMaxResponses;
 }
@@ -139,12 +150,34 @@ std::string ConverterJSON::GetNameOfApp() {
     if (!isConfigured) {
         ReadConfig();
     }
+        try {
+        mVersionApp = mJsonConfig["config"]["version"];
+        mNameOfApp = mJsonConfig["config"]["name"];
+        SetMaxResponses(configJSONFile["config"]["max_responses"]);
+        SetMethodOfSearch(configJSONFile["config"]["method_search"]);
+
+        mFileNames = std::vector<std::string>(configJSONFile["files"].begin(), configJSONFile["files"].end());
+        isConfigured = true;
+    } catch (...) {
+        throw ExceptionError("Error config in " + mConfigFileName + " file.");
+    }
     return mNameOfApp;
 }
 
 std::string ConverterJSON::GetVersionApp() {
     if (!isConfigured) {
         ReadConfig();
+    }
+        try {
+        mVersionApp = mJsonConfig["config"]["version"];
+        mNameOfApp = mJsonConfig["config"]["name"];
+        SetMaxResponses(configJSONFile["config"]["max_responses"]);
+        SetMethodOfSearch(configJSONFile["config"]["method_search"]);
+
+        mFileNames = std::vector<std::string>(configJSONFile["files"].begin(), configJSONFile["files"].end());
+        isConfigured = true;
+    } catch (...) {
+        throw ExceptionError("Error config in " + mConfigFileName + " file.");
     }
     return mVersionApp;
 }
@@ -174,12 +207,35 @@ void ConverterJSON::SetMethodOfSearch(int methodOfSearch) {
         std::cerr << "WARNING! Method of search maust be from 1 to 3" << std::endl;
         std::cout << "Method search set by 1";
     }
+
+        try {
+        mVersionApp = mJsonConfig["config"]["version"];
+        mNameOfApp = mJsonConfig["config"]["name"];
+        SetMaxResponses(configJSONFile["config"]["max_responses"]);
+        SetMethodOfSearch(configJSONFile["config"]["method_search"]);
+
+        mFileNames = std::vector<std::string>(configJSONFile["files"].begin(), configJSONFile["files"].end());
+        isConfigured = true;
+    } catch (...) {
+        throw ExceptionError("Error config in " + mConfigFileName + " file.");
+    }
     mMethodOfSearch = methodOfSearch;
 }
 
 int ConverterJSON::GetMethodOfSearch() {
     if (!isConfigured) {
         ReadConfig();
+    }
+        try {
+        mVersionApp = mJsonConfig["config"]["version"];
+        mNameOfApp = mJsonConfig["config"]["name"];
+        SetMaxResponses(configJSONFile["config"]["max_responses"]);
+        SetMethodOfSearch(configJSONFile["config"]["method_search"]);
+
+        mFileNames = std::vector<std::string>(configJSONFile["files"].begin(), configJSONFile["files"].end());
+        isConfigured = true;
+    } catch (...) {
+        throw ExceptionError("Error config in " + mConfigFileName + " file.");
     }
     return mMethodOfSearch;
 }

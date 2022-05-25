@@ -66,6 +66,7 @@ TEST(converterJSON, IsValidVersion_valid) {
 TEST(converterJSON, IsValidVersion_invalid) {
     configFile["config"]["version"] = "100.200";
     SaveTestJsonFile(fileNameTest, configFile);
+    configFile["config"]["version"] = VERSION_APP;
     converterJson.SetConfigFileName(fileNameTest);
     bool res = converterJson.IsValidVersion();
     EXPECT_EQ(false, converterJson.IsValidVersion());
@@ -122,7 +123,7 @@ TEST(converterJSON, GetRequests_emptyFile_or_error) {
     }
     converterJson.SetRequestsFileName(fileNameTest);
     ASSERT_EXCEPTION({ converterJson.GetRequests(); }, ExceptionError,
-                     "Error: Error requests in " + fileNameTest + " file")
+                     "Error: File " + fileNameTest + " corrupted")
     std::remove(fileNameTest.c_str());
 }
 

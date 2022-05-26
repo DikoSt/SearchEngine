@@ -46,7 +46,7 @@ std::vector<RelativeIndex> SearchServer::SearchByQuery_method2(const std::string
                 return a.docId == docIdWordIt->docId;
             });
             if (it == nextDocs.end()) {
-                findDocs.erase(docIdWordIt);
+                docIdWordIt = findDocs.erase(docIdWordIt);
             } else {
                 docIdWordIt->count += it->count;
                 docIdWordIt++;

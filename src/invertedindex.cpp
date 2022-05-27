@@ -91,7 +91,8 @@ void InvertedIndex::ToIndexDoc(const size_t &docId, const std::string &docFileNa
 
 void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &fileNames, const int &maxThreads) {
     //mDocs = std::vector<std::string>(inputDocs.begin(), inputDocs.end()); Ничего записывать в mDocs не будем
-    mLockDictionary = new std::mutex;
+    mFreqDictionary.clear();
+	mLockDictionary = new std::mutex;
     if (fileNames.empty()) {
         std::cerr << "WARNING: List of filenames is empty." << std::endl;
         return;
